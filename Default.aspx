@@ -13,25 +13,35 @@
 <%@ Import Namespace="System.Drawing" %>
 <%@ Import Namespace="System.Drawing.Drawing2D" %>
 <%@ Import Namespace="System.Drawing.Imaging" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
 <script runat="server">
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        //Code by Matthew Costello, 08/2011 http://www.mrcostello.com
-        string path = Server.MapPath(".") + "\\temp";
-
-        if (Directory.Exists(path))
+        try
         {
-            GetFiles();
+            //Test Code by Matthew Costello : 08/2011 http://www.mrcostello.com
+            //Revised : 09/2014
+
+            string path = Server.MapPath(".") + "\\temp";
+
+            if (Directory.Exists(path))
+            {
+                getFiles();
+            }
+            else if (!Directory.Exists(path))
+            {
+
+            }
         }
-        else if (!Directory.Exists(path))
+        catch (Exception ex)
         {
-
+            lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btnmakedir_Click(object sender, EventArgs e)
+    protected void btnMakeDirectory_Click(object sender, EventArgs e)
     {
         string path = Server.MapPath(".") + "\\temp";
 
@@ -56,7 +66,7 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btndeletedir_Click(object sender, EventArgs e)
+    protected void btnDeleteDirectory_Click(object sender, EventArgs e)
     {
         string path = Server.MapPath(".") + "\\temp";
 
@@ -85,7 +95,7 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btncreatetext_Click(object sender, EventArgs e)
+    protected void btnCreateTextFile_Click(object sender, EventArgs e)
     {
         try
         {
@@ -99,7 +109,7 @@
                     File.WriteAllText(path + "\\WriteText.txt", text);
                     lblInfo.Text = "Successfully Created WriteText.txt at : <br />" + path + "<br />" + Directory.GetCreationTime(path);
 
-                    GetFiles();
+                    getFiles();
                 }
                 else if (File.Exists(path + "\\WriteText.txt"))
                 {
@@ -116,7 +126,7 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btndeletetext_Click(object sender, EventArgs e)
+    protected void btnDeleteTextFile_Click(object sender, EventArgs e)
     {
         string path = Server.MapPath(".") + "\\temp\\WriteText.txt";
 
@@ -127,7 +137,7 @@
                 File.Delete(path);
                 lblInfo.Text = "The file was deleted successfully.";
 
-                GetFiles();
+                getFiles();
             }
             else if (!File.Exists(path))
             {
@@ -156,7 +166,7 @@
                     FileUpload1.SaveAs(fileName);
                     lblInfo.Text = "The file was uploaded successfully.";
 
-                    GetFiles();
+                    getFiles();
                 }
                 else
                 {
@@ -181,7 +191,7 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btnupdatefilelist_Click(object sender, EventArgs e)
+    protected void btnUpdateFileList_Click(object sender, EventArgs e)
     {
         string path = Server.MapPath(".") + "\\temp";
 
@@ -190,7 +200,7 @@
             if (Directory.Exists(path))
             {
 
-                GetFiles();
+                getFiles();
 
             }
             else if (!Directory.Exists(path))
@@ -203,7 +213,7 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btndeletefile_Click(object sender, EventArgs e)
+    protected void btnDeleteFile_Click(object sender, EventArgs e)
     {
         string path = this.ddl2.Text.ToString();
         try
@@ -214,7 +224,7 @@
                 lblInfo.Text = "The file was deleted successfully.";
 
 
-                GetFiles();
+                getFiles();
             }
             else if (!Directory.Exists(path))
             {
@@ -230,13 +240,13 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-    protected void btnpwd_Click(object sender, EventArgs e)
+    protected void btnPwd_Click(object sender, EventArgs e)
     {
         string path = Server.MapPath(".");
 
         lblIPHost.Text = path.ToString();
     }
-    public void GetFiles()
+    protected void getFiles()
     {
         //string dir = this.ddl1.Text;
         //string windows = @ConfigurationManager.AppSettings["ServerDirectory"];
@@ -256,13 +266,7 @@
             lblInfo.Text = "The following failed: <br /> <br />" + ex.ToString();
         }
     }
-
-    protected void btnmachinename_Click(object sender, EventArgs e)
-    {
-        lblIPHost.Text = Environment.MachineName;
-
-    }
-    protected void btniphost_Click(object sender, EventArgs e)
+    protected void btnGetIpHostDetails_Click(object sender, EventArgs e)
     {
         string host = Environment.MachineName;
 
@@ -295,7 +299,7 @@
         {
         }
     }
-    void btnSubmit_Click(Object sender, EventArgs e)
+    protected void btnSubmit_Click(Object sender, EventArgs e)
     {
         try
         {
@@ -354,7 +358,7 @@
             lblsmtpinfo.Text = "Send failure: " + exc.ToString();
         }
     }
-    void btnSubmit_sql_Click(Object sender, EventArgs e)
+    protected void btnSubmit_sql_Click(Object sender, EventArgs e)
     {
         try
         {
@@ -386,7 +390,44 @@
             lblsqlinfo.Text = "Trouble Connecting to MSSQL: " + exc.ToString();
         }
     }
-    
+    protected void btnGetMemoryUsage_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            lblIPHost.Text = "Total Memory: " + GC.GetTotalMemory(false) / 1048576 + "MB<br/>";
+        }
+        catch (Exception ex)
+        {
+            lblIPHost.Text = "The following failed: <br /> <br />" + ex.ToString();
+        }
+    }
+    protected void btnDirectoryListing_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            StringBuilder dirList = new StringBuilder();
+            string path = Server.MapPath("~/");
+
+            string[] directories = Directory.GetDirectories(path);
+
+            if (directories.Length > 0)
+            {
+
+                foreach (string dir in directories)
+                { dirList.AppendLine(dir + "<br />"); }
+
+                lblIPHost.Text = dirList.ToString();
+            }
+            else
+            {
+                lblIPHost.Text = "There are no sub directories.";
+            }
+        }
+        catch (Exception ex)
+        {
+            lblIPHost.Text = "The following failed: <br /> <br />" + ex.ToString();
+        }
+    }
 </script>
 <head id="Head1" runat="server">
     <title>ASP.NET 3.5 SP1 Test!</title>
@@ -414,7 +455,8 @@
         <br />
             <br />
             <br />
-            If site is provisioned on .NET 3.5 and provisioned with a Client/Enduser account&nbsp; make sure that symlinks have been created and enabled. <br />
+            If site is provisioned on .NET 3.5 and provisioned with a Client/Enduser account&nbsp; make sure that symlinks have been created and enabled.
+            <br />
             <br />
             Instructions:
         <br />
@@ -436,11 +478,11 @@
             <asp:Label runat="server" ID="lblInfo" ForeColor="Red" Text="" />
             <br />
             <br />
-            <asp:Button runat="server" ID="btnmakedir" OnClick="btnmakedir_Click" Text="Make Temp Directory" />
-            <asp:Button runat="server" ID="btndeletedir" OnClick="btndeletedir_Click" OnClientClick="window.location.reload();"
+            <asp:Button runat="server" ID="btnmakedir" OnClick="btnMakeDirectory_Click" Text="Make Temp Directory" />
+            <asp:Button runat="server" ID="btndeletedir" OnClick="btnDeleteDirectory_Click" OnClientClick="window.location.reload();"
                 Text="Delete Temp Directory" />
-            <asp:Button runat="server" ID="btncreatetext" OnClick="btncreatetext_Click" Text="Create Text File" />
-            <asp:Button runat="server" ID="btndeletetext" OnClick="btndeletetext_Click" Text="Delete Text File" />
+            <asp:Button runat="server" ID="btncreatetext" OnClick="btnCreateTextFile_Click" Text="Create Text File" />
+            <asp:Button runat="server" ID="btndeletetext" OnClick="btnDeleteTextFile_Click" Text="Delete Text File" />
             <br />
             <br />
             <div>
@@ -455,18 +497,23 @@
         <asp:DropDownList ID="ddl2" runat="server" />
             <br />
             <br />
-            <asp:Button runat="server" ID="btnupdatefilelist" OnClick="btnupdatefilelist_Click"
+            <asp:Button runat="server" ID="btnupdatefilelist" OnClick="btnUpdateFileList_Click"
                 Text="Manually Update File List" />
             <br />
-            <asp:Button runat="server" ID="btndeletefile" OnClick="btndeletefile_Click" Text="Delete File" />
+            <asp:Button runat="server" ID="btndeletefile" OnClick="btnDeleteFile_Click" Text="Delete File" />
             <br />
             <br />
             <asp:Label runat="server" ID="lblIPHost" ForeColor="Red" Text="" />
             <br />
             <br />
-            <asp:Button runat="server" ID="pwd" OnClick="btnpwd_Click" Text="PWD" />
+            <asp:Button runat="server" ID="pwd" OnClick="btnPwd_Click" Text="PWD" />
             <br />
-            <asp:Button runat="server" ID="btniphost" OnClick="btniphost_Click" Text="Get Local IP and Hostname" />
+            <asp:Button runat="server" ID="btniphost" OnClick="btnGetIpHostDetails_Click" Text="Get Local IP and Hostname" />
+            <br />
+            <asp:Button runat="server" ID="btnGetMemoryUsuage" OnClick="btnGetMemoryUsage_Click" Text="Get Memory Usage" />
+            <br />
+            <asp:Button runat="server" ID="btnListDirectories" OnClick="btnDirectoryListing_Click" Text="List Directories" />
+            <br />
             <br />
         </div>
         <div style="text-align: center;">
