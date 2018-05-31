@@ -325,7 +325,7 @@
                     SmtpClient smtp = new SmtpClient();
                     smtp.EnableSsl = true;
                     smtp.Host = MailServerText.Text.ToString();
-                    smtp.Port = 25;
+                    smtp.Port = int.Parse(PortServerText.Text.ToString());
                     smtp.Credentials = new System.Net.NetworkCredential(UserNameText.Text.ToString(), PasswordText.Text.ToString());
 
                     smtp.Send(objEmail);
@@ -335,7 +335,7 @@
                 {
                     SmtpClient smtp = new SmtpClient();
                     smtp.Host = MailServerText.Text.ToString();
-                    smtp.Port = 25;
+                    smtp.Port = int.Parse(PortServerText.Text.ToString());
                     smtp.Credentials = new System.Net.NetworkCredential(UserNameText.Text.ToString(), PasswordText.Text.ToString());
 
                     smtp.Send(objEmail);
@@ -634,6 +634,14 @@
                         </td>
                         <td style="height: 24px;" valign="top">
                             <asp:TextBox runat="server" Height="22px" Width="210px" ID="MailServerText"></asp:TextBox>
+                            <br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top">Port
+                        </td>
+                        <td style="height: 24px;" valign="top">
+                            <asp:TextBox runat="server" Height="22px" Width="210px" ID="PortServerText"></asp:TextBox>
                             <br />
                         </td>
                     </tr>
